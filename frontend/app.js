@@ -454,30 +454,50 @@ function promptBackendUrl() {
     }
 }
 
-async function checkBackendHealth() {
+let healthCheckTimer = null;
+
+async function checkBackendHealth(isRetry = false) {
     const dot = document.getElementById('apiStatusDot');
     const label = document.getElementById('apiStatusLabel');
     if (!dot) return;
+
+    if (!isRetry) {
+        dot.style.background = '#f59e0b';
+        if (label) label.textContent = 'Connecting...';
+    }
+
     try {
-        const res = await fetch(`${BACKEND_URL}/`, { method: 'GET', signal: AbortSignal.timeout(4000) });
+        const res = await fetch(`${BACKEND_URL}/`, { method: 'GET', signal: AbortSignal.timeout(15000) });
         if (res.ok) {
             dot.style.background = '#22c55e';
             if (label) label.textContent = 'API Connected';
-        } else {
-            dot.style.background = '#f59e0b';
-            if (label) label.textContent = 'API Error';
+            if (healthCheckTimer) {
+                clearTimeout(healthCheckTimer);
+                healthCheckTimer = null;
+            }
+            return;
         }
+        dot.style.background = '#f59e0b';
+        if (label) label.textContent = 'Waking Up...';
     } catch (e) {
-        dot.style.background = '#ef4444';
-        if (label) label.textContent = 'API Offline';
+        dot.style.background = '#f59e0b';
+        if (label) label.textContent = 'Waking Up...';
+    }
+
+    // Auto-retry every 4 seconds until connected (Render free instances take ~20-30s to wake up)
+    if (!healthCheckTimer) {
+        healthCheckTimer = setTimeout(() => {
+            healthCheckTimer = null;
+            checkBackendHealth(true);
+        }, 4000);
     }
 }
 
 // Initial health check
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', checkBackendHealth);
+    document.addEventListener('DOMContentLoaded', () => checkBackendHealth(false));
 } else {
-    checkBackendHealth();
+    checkBackendHealth(false);
 }
 
 
