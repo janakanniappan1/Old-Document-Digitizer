@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: old-document-digitizer-api
+    runtime: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: gunicorn -w 1 -b 0.0.0.0:$PORT --timeout 300 --chdir backend app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.14
+      - key: FLASK_ENV
+        value: production
+      - key: GROQ_API_KEY
+        sync: false

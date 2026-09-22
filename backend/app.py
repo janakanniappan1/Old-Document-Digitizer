@@ -60,11 +60,17 @@ def internal_error(e):
 # ── Health check ──────────────────────────────────────────────────────────────
 @app.route("/")
 def home():
+    llm_name = "Ollama (Qwen2.5)"
+    if os.environ.get("GROQ_API_KEY"):
+        llm_name = f"Groq Cloud AI ({os.environ.get('GROQ_MODEL', 'llama-3.1-8b-instant')})"
+    elif os.environ.get("GEMINI_API_KEY"):
+        llm_name = "Google Gemini Cloud AI"
+
     return jsonify({
         "project": "Old Document Digitizer",
         "backend": "Running",
         "OCR": "PaddleOCR",
-        "LLM": "Qwen2.5",
+        "LLM": llm_name,
         "status": "Ready"
     })
 
