@@ -1,9 +1,11 @@
-// Dynamic Backend API URL (configurable via ?api=... query parameter, localStorage, or defaults to local)
+// Dynamic Backend API URL (defaults to live Render backend, or local if running on localhost)
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const defaultApi = isLocal ? 'http://127.0.0.1:5000' : 'https://old-document-digitizer.onrender.com';
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('api')) {
     localStorage.setItem('backend_url', urlParams.get('api').replace(/\/$/, ''));
 }
-let BACKEND_URL = localStorage.getItem('backend_url') || 'http://127.0.0.1:5000';
+let BACKEND_URL = localStorage.getItem('backend_url') || defaultApi;
 
 let selectedMethod = null; // 'upload', 'laptop', or 'mobile'
 let currentProcessingMode = 'ai'; // 'ai' or 'fast'
