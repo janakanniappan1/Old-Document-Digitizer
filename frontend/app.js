@@ -5,7 +5,15 @@ const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('api')) {
     localStorage.setItem('backend_url', urlParams.get('api').replace(/\/$/, ''));
 }
-let BACKEND_URL = localStorage.getItem('backend_url') || defaultApi;
+
+// If on a live HTTPS site (like Vercel), ignore stale 'http://' localhost URLs to prevent Mixed Content errors
+let storedApi = localStorage.getItem('backend_url');
+if (!isLocal && storedApi && storedApi.startsWith('http://')) {
+    localStorage.removeItem('backend_url');
+    storedApi = null;
+}
+
+let BACKEND_URL = storedApi || defaultApi;
 
 let selectedMethod = null; // 'upload', 'laptop', or 'mobile'
 let currentProcessingMode = 'ai'; // 'ai' or 'fast'
@@ -146,11 +154,20 @@ function startExtraction(method) {
             body: formData,
             signal: signal
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().catch(() => ({})).then(errData => {
+                    throw new Error(errData.error || `Server responded with ${response.status}`);
+                });
+            }
+            return response.json();
+        })
         .then(data => displayResults(data))
         .catch(err => {
             if (err.name === 'AbortError') return;
-            console.error(err); alert("Extraction failed."); navigate('3a'); 
+            console.error('Extraction error:', err);
+            alert("Extraction failed: " + (err.message || "Could not reach backend"));
+            navigate('3a'); 
         });
         
     } else if (method === 'laptop') {
@@ -165,11 +182,20 @@ function startExtraction(method) {
                 body: formData,
                 signal: signal
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().catch(() => ({})).then(errData => {
+                        throw new Error(errData.error || `Server responded with ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
             .then(data => displayResults(data))
             .catch(err => {
                 if (err.name === 'AbortError') return;
-                console.error(err); alert("Extraction failed."); navigate('4a'); 
+                console.error('Extraction error:', err);
+                alert("Extraction failed: " + (err.message || "Could not reach backend"));
+                navigate('4a'); 
             });
         }, 'image/jpeg');
         
@@ -178,11 +204,20 @@ function startExtraction(method) {
             method: 'POST',
             signal: signal
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().catch(() => ({})).then(errData => {
+                    throw new Error(errData.error || `Server responded with ${response.status}`);
+                });
+            }
+            return response.json();
+        })
         .then(data => displayResults(data))
         .catch(err => {
             if (err.name === 'AbortError') return;
-            console.error(err); alert("Extraction failed."); navigate('4c'); 
+            console.error('Extraction error:', err);
+            alert("Extraction failed: " + (err.message || "Could not reach backend"));
+            navigate('4c'); 
         });
     }
 }
