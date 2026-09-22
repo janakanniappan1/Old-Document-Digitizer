@@ -1,6 +1,9 @@
 // Dynamic Backend API URL (configurable via ?api=... query parameter, localStorage, or defaults to local)
 const urlParams = new URLSearchParams(window.location.search);
-const BACKEND_URL = urlParams.get('api') || localStorage.getItem('backend_url') || 'http://127.0.0.1:5000';
+if (urlParams.get('api')) {
+    localStorage.setItem('backend_url', urlParams.get('api').replace(/\/$/, ''));
+}
+let BACKEND_URL = localStorage.getItem('backend_url') || 'http://127.0.0.1:5000';
 
 let selectedMethod = null; // 'upload', 'laptop', or 'mobile'
 let currentProcessingMode = 'ai'; // 'ai' or 'fast'
@@ -400,4 +403,44 @@ function disconnectMobileCamera() {
         navigate('3b');
     });
 }
+
+// --- Dynamic API Server Configuration & Health Check ---
+function promptBackendUrl() {
+    const current = localStorage.getItem('backend_url') || BACKEND_URL;
+    const newUrl = prompt("Enter your Backend API URL (e.g. Hugging Face Space URL):\nExample: https://yourusername-old-document-digitizer.hf.space", current);
+    if (newUrl !== null && newUrl.trim() !== '') {
+        const cleaned = newUrl.trim().replace(/\/$/, '');
+        localStorage.setItem('backend_url', cleaned);
+        BACKEND_URL = cleaned;
+        checkBackendHealth();
+        alert("Backend URL updated to:\n" + cleaned);
+    }
+}
+
+async function checkBackendHealth() {
+    const dot = document.getElementById('apiStatusDot');
+    const label = document.getElementById('apiStatusLabel');
+    if (!dot) return;
+    try {
+        const res = await fetch(`${BACKEND_URL}/`, { method: 'GET', signal: AbortSignal.timeout(4000) });
+        if (res.ok) {
+            dot.style.background = '#22c55e';
+            if (label) label.textContent = 'API Connected';
+        } else {
+            dot.style.background = '#f59e0b';
+            if (label) label.textContent = 'API Error';
+        }
+    } catch (e) {
+        dot.style.background = '#ef4444';
+        if (label) label.textContent = 'API Offline';
+    }
+}
+
+// Initial health check
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkBackendHealth);
+} else {
+    checkBackendHealth();
+}
+
 

@@ -190,6 +190,43 @@ body::-webkit-scrollbar {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1), 0 0 15px rgba(212, 175, 55, 0.2);
 }
 
+.header-api-btn {
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(139, 90, 43, 0.12);
+    border: 1px solid rgba(139, 90, 43, 0.35);
+    border-radius: 20px;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-ink);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    backdrop-filter: blur(4px);
+    user-select: none;
+    z-index: 10;
+}
+
+.header-api-btn:hover {
+    background: rgba(139, 90, 43, 0.22);
+    box-shadow: 0 2px 8px rgba(139, 90, 43, 0.2);
+    transform: translateY(-1px);
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #9ca3af;
+    display: inline-block;
+    transition: background 0.3s ease;
+    box-shadow: 0 0 4px rgba(0,0,0,0.2);
+}
+
+
 
 /* =========================================
    NAVIGATION BUTTONS (BACK & HOME)
