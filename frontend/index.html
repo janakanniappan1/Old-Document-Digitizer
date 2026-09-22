@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The AlphaBros WebPage</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Google Fonts: Berkshire Swash (Logo), Cinzel (Badges), Inter (Modern Readability), Merriweather (Book Serif), JetBrains Mono (Data/Code), Playfair Display (Headers) -->
+    <link href="https://fonts.googleapis.com/css2?family=Berkshire+Swash&family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons for Illustrations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- PAGE 1: HOME -->
+    <div id="page-1" class="page active">
+        <!-- The ancient parchment background container -->
+        <div class="parchment-canvas">
+            <!-- Intense aging vignette overlay -->
+            <div class="aging-vignette"></div>
+
+            <!-- The ornamental border -->
+            <div class="ornate-border">
+
+                <!-- Navigation & Logo -->
+                <header class="header">
+                    <nav class="nav-links">
+                        <a href="javascript:void(0)" class="nav-home active" onclick="navigate('1')">Home</a>
+                        <a href="javascript:void(0)" class="nav-about" onclick="navigate('about')">About</a>
+                    </nav>
+                    <div class="logo">The AlphaBrothers</div>
+                    <!-- Empty div for grid alignment -->
+                    <div></div>
+                </header>
+
+                <!-- Main Content Area -->
+                <main class="hero">
+
+                    <!-- Left Side Illustration (Open Book) -->
+                    <div class="side-illustration left-book">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+
+                    <!-- Right Side Illustration (Scrolls) -->
+                    <div class="side-illustration right-scrolls">
+                        <i class="fa-solid fa-scroll scroll-top"></i>
+                        <i class="fa-solid fa-scroll scroll-bottom"></i>
+                    </div>
+
+                    <!-- Center Content -->
+                    <div class="center-content">
+                        <h1 class="greeting">Welcome, Scholar!</h1>
+                        
+                        <p class="home-subtitle">Restore, digitize, and transcribe ancient manuscripts, historical archives, and cursive handwriting through neural vision & linguistic intelligence.</p>
+
+                        <!-- System Status & Model Indicators -->
+                        <div class="system-status-pills">
+                            <div class="status-pill"><i class="fa-solid fa-bolt status-icon"></i> <span>PaddleOCR Multi-Scale</span></div>
+                            <div class="status-pill"><i class="fa-solid fa-brain status-icon"></i> <span>CRNN CTC Neural Network</span></div>
+                            <div class="status-pill"><i class="fa-solid fa-wand-magic-sparkles status-icon"></i> <span>Ollama Qwen2.5 Intelligence</span></div>
+                        </div>
+
+                        <!-- The massive ornate button -->
+                        <button class="ornate-button" onclick="navigate('2')">
+                            <div class="button-inner">
+                                <span class="button-text">Start Recognition</span>
+                                <div class="magical-glow"></div>
+                            </div>
+                        </button>
+
+                        <!-- 3 Quick Start Feature Cards -->
+                        <div class="home-feature-cards">
+                            <div class="home-feature-card" onclick="navigate('2'); selectMethod('upload');">
+                                <div class="feature-card-icon"><i class="fa-solid fa-file-arrow-up"></i></div>
+                                <h3>Upload Documents</h3>
+                                <p>Transcribe historical scans and photographs in JPG, PNG, or WebP format.</p>
+                            </div>
+                            <div class="home-feature-card" onclick="navigate('2'); selectMethod('camera');">
+                                <div class="feature-card-icon"><i class="fa-solid fa-camera"></i></div>
+                                <h3>Live Camera Scanner</h3>
+                                <p>Capture desk manuscripts via laptop webcam or stream from your smartphone IP camera.</p>
+                            </div>
+                            <div class="home-feature-card" onclick="navigate('about')">
+                                <div class="feature-card-icon"><i class="fa-solid fa-book-bookmark"></i></div>
+                                <h3>The Scholar's Codex</h3>
+                                <p>Explore the neural pipeline, active learning retraining, and privacy architecture.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </main>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE ABOUT: THE SCHOLAR'S CODEX -->
+    <div id="page-about" class="page" style="display: none;">
+        <div class="wood-table">
+            <button class="back-btn" onclick="navigate('1')">
+                <i class="fa-solid fa-arrow-left-long"></i> Back
+            </button>
+            <button class="home-btn" onclick="navigate('1')">
+                <i class="fa-solid fa-house"></i> Home
+            </button>
+            <div class="open-book">
+                <div class="book-spine"></div>
+                
+                <h1 class="book-title" style="margin-bottom: 4px;">The Scholar's Chronicle</h1>
+                <p class="codex-subtitle">Historical Document Preservation through Neural Intelligence</p>
+                
+                <div class="about-pages-container">
+                    <!-- Left Page: Mission & How it Works -->
+                    <div class="book-page about-col">
+                        <h2 class="section-title"><i class="fa-solid fa-feather-pointed" style="color: #7b4416; margin-right: 8px;"></i>Our Mission</h2>
+                        <p class="about-text">
+                            Historical documents, personal journals, and ancient archives carry centuries of human wisdom. Yet, fading ink, paper decay, and complex cursive scripts make them nearly impossible for standard digital scanners to decipher.
+                        </p>
+                        <p class="about-text">
+                            <strong>The AlphaBrothers Digitizer</strong> was crafted to resurrect these physical treasures. By pairing deep computer vision with local generative language models, it provides scholars, historians, and archivists with an intelligent, private transcription workstation.
+                        </p>
+
+                        <h2 class="section-title" style="margin-top: 15px;"><i class="fa-solid fa-network-wired" style="color: #7b4416; margin-right: 8px;"></i>The Multi-Engine Architecture</h2>
+                        <div class="engine-steps">
+                            <div class="engine-step">
+                                <div class="step-num">I</div>
+                                <div class="step-content">
+                                    <strong>Adaptive Multi-Scale Vision</strong>
+                                    <span>Analyzes images across multiple resolutions to segment faded ink strokes and fine handwriting contours accurately.</span>
+                                </div>
+                            </div>
+                            <div class="engine-step">
+                                <div class="step-num">II</div>
+                                <div class="step-content">
+                                    <strong>CRNN Sequence Recognition</strong>
+                                    <span>A Convolutional Recurrent Neural Network trained with Connectionist Temporal Classification (CTC) decodes cursive character sequences.</span>
+                                </div>
+                            </div>
+                            <div class="engine-step">
+                                <div class="step-num">III</div>
+                                <div class="step-content">
+                                    <strong>Generative AI Reconstruction</strong>
+                                    <span>Ollama (Qwen2.5 7B) performs deterministic linguistic repair, re-gluing broken words and fixing typographical errors while preserving proper nouns.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Page: Features & Privacy & Tips -->
+                    <div class="book-page about-col">
+                        <h2 class="section-title"><i class="fa-solid fa-shield-halved" style="color: #7b4416; margin-right: 8px;"></i>100% Offline & Private</h2>
+                        <p class="about-text">
+                            Confidential manuscripts, legal records, and family heirlooms remain strictly protected. All OCR and LLM inferences execute <strong>locally on your machine</strong>—no images or transcriptions are ever transmitted to external cloud servers.
+                        </p>
+
+                        <h2 class="section-title" style="margin-top: 15px;"><i class="fa-solid fa-lightbulb" style="color: #7b4416; margin-right: 8px;"></i>Tips for Optimal Transcription</h2>
+                        <ul class="tips-list">
+                            <li><i class="fa-solid fa-sun tip-icon"></i> <span><strong>Diffuse Illumination:</strong> Position light from the sides to avoid glares and heavy paper shadows.</span></li>
+                            <li><i class="fa-solid fa-expand tip-icon"></i> <span><strong>Flatten the Page:</strong> Minimize page curvature near the spine for the most accurate line segmentation.</span></li>
+                            <li><i class="fa-solid fa-crop tip-icon"></i> <span><strong>Parallel Alignment:</strong> Orient your camera directly perpendicular to the page surface.</span></li>
+                        </ul>
+
+                        <h2 class="section-title" style="margin-top: 15px;"><i class="fa-solid fa-file-export" style="color: #7b4416; margin-right: 8px;"></i>Rich Export Formats</h2>
+                        <p class="about-text">
+                            Compare original OCR side-by-side with AI-corrected text. Download ready-to-use <strong>.TXT</strong> documents, structured <strong>.JSON</strong> datasets, or copy straight to your clipboard with one click.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Action Button (hanging off bottom) -->
+                <div class="about-action-container">
+                    <button class="ornate-button" onclick="navigate('2')">
+                        <div class="button-inner" style="font-size: clamp(1rem, 2.5vh, 1.6rem); padding: 8px 35px;">
+                            <span class="button-text">Start Recognition</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 2: CHOOSE METHOD -->
+    <div id="page-2" class="page" style="display: none;">
+        <div class="wood-table">
+            <button class="back-btn" onclick="navigate('1')">
+                <i class="fa-solid fa-arrow-left-long"></i> Back
+            </button>
+            <button class="home-btn" onclick="navigate('1')">
+                <i class="fa-solid fa-house"></i> Home
+            </button>
+            <div class="open-book">
+                <div class="book-spine"></div>
+                
+                <h1 class="book-title">Choose Recognition Method</h1>
+                
+                <div class="cards-layout">
+                    <!-- Card 1: Upload -->
+                    <div class="choice-card" onclick="selectMethod('upload')">
+                        <h2>Upload from Device</h2>
+                        <i class="fa-solid fa-file-image card-icon"></i>
+                        <div class="card-footer">
+                            <p>Upload a clear image of historical manuscripts for instant transcription.</p>
+                            <div class="file-formats">
+                                <div class="format-item">
+                                    <i class="fa-regular fa-image"></i>
+                                    <span>JPG</span>
+                                </div>
+                                <div class="format-item">
+                                    <i class="fa-regular fa-image"></i>
+                                    <span>PNG</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 2: Camera -->
+                    <div class="choice-card" onclick="selectMethod('camera')">
+                        <h2>Capture using Camera</h2>
+                        <i class="fa-solid fa-camera-retro card-icon"></i>
+                        <div class="card-footer">
+                            <p>Connect your laptop webcam or a mobile IP camera for live extraction.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Select Button -->
+                <div class="select-btn-container">
+                    <button id="btn-select-method" class="ornate-button" disabled onclick="confirmMethod()">
+                        <div class="button-inner" style="font-size: clamp(1rem, 3vh, 2rem); padding: 10px 40px;">
+                            <span class="button-text">Proceed to Scanner</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 3A: UPLOAD FROM DEVICE -->
+    <div id="page-3a" class="page" style="display: none;">
+        <div class="wood-table">
+            <button class="back-btn" onclick="navigate('2')">
+                <i class="fa-solid fa-arrow-left-long"></i> Back
+            </button>
+            <button class="home-btn" onclick="navigate('1')">
+                <i class="fa-solid fa-house"></i> Home
+            </button>
+            <div class="open-book">
+                <div class="book-spine"></div>
+                
+                <h1 class="book-title">Upload from Device</h1>
+                
+                <div class="upload-layout">
+                    <!-- Left side: Dropzone -->
+                    <div class="upload-dropzone" onclick="document.getElementById('file-upload').click()">
+                        <input type="file" id="file-upload" accept=".jpg,.jpeg,.png" style="display:none;" onchange="handleImageUpload(event)">
+                        <div class="dropzone-inner">
+                            <div class="dropzone-text">
+                                <span>Drag & Drop</span>
+                                <span class="small-text">or</span>
+                                <span>Browse File</span>
+                            </div>
+                            <i class="fa-solid fa-file-arrow-up dropzone-icon"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Right side: Info and Preview -->
+                    <div class="upload-sidebar">
+                        <div class="supported-formats-section">
+                            <h3>Supported Formats</h3>
+                            <div class="file-formats">
+                                <div class="format-item">
+                                    <i class="fa-solid fa-file-image"></i>
+                                    <span>JPG</span>
+                                </div>
+                                <div class="format-item">
+                                    <i class="fa-solid fa-file-image"></i>
+                                    <span>PNG</span>
+                                </div>
+                                <div class="format-item">
+                                    <i class="fa-solid fa-file-image"></i>
+                                    <span>JPEG</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Engine Mode Selector cleanly placed inside sidebar -->
+                        <div class="mode-selector-container">
+                            <span class="mode-label"><i class="fa-solid fa-sliders"></i> Engine Mode:</span>
+                            <div class="mode-toggle-group">
+                                <button type="button" class="mode-btn active" id="mode-btn-ai" onclick="setProcessingMode('ai')">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> <span>AI Refine</span> <span class="mode-chip">Smart</span>
+                                </button>
+                                <button type="button" class="mode-btn" id="mode-btn-fast" onclick="setProcessingMode('fast')">
+                                    <i class="fa-solid fa-bolt"></i> <span>Fast Direct</span> <span class="mode-chip">~2s</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="preview-container">
+                            <div class="preview-inner">
+                                <span id="preview-text">Preview<br>Image</span>
+                                <img id="image-preview" src="" alt="Preview" style="display:none;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Extract Button (hanging off bottom with ample clearance) -->
+                <button id="btn-extract" class="ornate-button extract-btn" disabled onclick="startExtraction('upload')">
+                    <div class="button-inner" style="font-size: clamp(1rem, 3vh, 2rem); padding: 10px 40px;">
+                        <span class="button-text">Extract Text</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 3B: CHOOSE CAMERA TYPE -->
+    <div id="page-3b" class="page" style="display: none;">
+        <div class="wood-table">
+            <button class="back-btn" onclick="navigate('2')" style="top: clamp(15px, 3vh, 30px); left: clamp(15px, 3vh, 30px); color: #e6d3af;">
+                <i class="fa-solid fa-arrow-left-long"></i> Back
+            </button>
+            <button class="home-btn" onclick="navigate('1')" style="top: clamp(15px, 3vh, 30px); right: clamp(15px, 3vh, 30px); color: #e6d3af;">
+                <i class="fa-solid fa-house"></i> Home
+            </button>
+            
+            <div class="wooden-boxes-container">
+                
+                <!-- Box 1: Laptop -->
+                <div class="wooden-box">
+                    <div class="brass-corner bottom-left"></div>
+                    <div class="brass-corner bottom-right"></div>
+                    
+                    <div class="box-inner-parchment">
+                        <h2>Laptop Camera</h2>
+                        
+                        <span class="fa-stack fa-2x custom-icon-stack">
+                            <i class="fa-solid fa-laptop fa-stack-2x"></i>
+                            <i class="fa-solid fa-camera fa-stack-1x fa-inverse inner-icon"></i>
+                        </span>
+                        
+                        <button class="ornate-button box-select-btn" onclick="selectCameraType('laptop')">
+                            <div class="button-inner">
+                                <span class="button-text">Select</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Box 2: Mobile IP -->
+                <div class="wooden-box">
+                    <div class="brass-corner bottom-left"></div>
+                    <div class="brass-corner bottom-right"></div>
+                    
+                    <div class="box-inner-parchment">
+                        <h2>Mobile IP Camera</h2>
+                        
+                        <span class="fa-stack fa-2x custom-icon-stack">
+                            <i class="fa-solid fa-mobile-screen fa-stack-2x"></i>
+                            <i class="fa-solid fa-wifi fa-stack-1x fa-inverse inner-icon wifi-icon"></i>
+                        </span>
+                        
+                        <button class="ornate-button box-select-btn" onclick="selectCameraType('mobile')">
+                            <div class="button-inner">
+                                <span class="button-text">Select</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 4A: LAPTOP CAMERA SCANNER -->
+    <div id="page-4a" class="page" style="display: none;">
+        <div class="wood-table">
+            <div class="open-book">
+                <button class="back-btn" onclick="navigate('3b')">
+                    <i class="fa-solid fa-arrow-left-long"></i> Back
+                </button>
+                <button class="home-btn" onclick="navigate('1')">
+                    <i class="fa-solid fa-house"></i> Home
+                </button>
+                <div class="book-spine"></div>
+                
+                <div class="camera-viewport-container">
+                    <div class="ornate-brass-frame">
+                        <video id="laptop-camera-feed" autoplay playsinline></video>
+                        <canvas id="laptop-camera-canvas" style="display:none;"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons (hanging off bottom) -->
+                <div class="scanner-actions">
+                    <button id="btn-capture-laptop" class="ornate-button extract-btn" onclick="captureLaptopImage()">
+                        <div class="button-inner" style="font-size: clamp(1rem, 3vh, 2rem); padding: 10px 30px;">
+                            <span class="button-text">Capture</span>
+                        </div>
+                    </button>
+                    <button id="btn-extract-laptop" class="ornate-button extract-btn" disabled onclick="startExtraction('laptop')">
+                        <div class="button-inner" style="font-size: clamp(1rem, 3vh, 2rem); padding: 10px 30px;">
+                            <span class="button-text">Extract Text</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 4B: MOBILE IP CAMERA SETUP -->
+    <div id="page-4b" class="page" style="display: none;">
+        <div class="wood-table">
+            <button class="back-btn" onclick="navigate('3b')" style="top: clamp(15px, 3vh, 30px); left: clamp(15px, 3vh, 30px); color: #e6d3af;">
+                <i class="fa-solid fa-arrow-left-long"></i> Back
+            </button>
+            <button class="home-btn" onclick="navigate('1')" style="top: clamp(15px, 3vh, 30px); right: clamp(15px, 3vh, 30px); color: #e6d3af;">
+                <i class="fa-solid fa-house"></i> Home
+            </button>
+            
+            <div class="horizontal-scroll-container">
+                <!-- Left curl of the scroll -->
+                <div class="scroll-curl left-curl"></div>
+                
+                <!-- Main parchment area of the scroll -->
+                <div class="scroll-parchment">
+                    <h1 class="instructions-title">Instructions</h1>
+                    
+                    <div class="instructions-layout">
+                        <ol class="instructions-list">
+                            <li>Download IP Webcam App</li>
+                            <li>Connect Phone and Laptop to Same WiFi</li>
+                            <li>Start Server</li>
+                            <li>Copy IP Address</li>
+                        </ol>
+                        <i class="fa-solid fa-tower-broadcast antenna-icon"></i>
+                    </div>
+                    
+                    <div class="ip-input-container">
+                        <div class="ip-input-wrapper">
+                            <span class="ip-prefix">http://</span>
+                            <input type="text" id="ip-camera-url" class="ip-input" placeholder="192.168.x.x:8080">
+                            <span class="ip-suffix">/video</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Connect Button (hanging off bottom) -->
+                    <button class="ornate-button extract-btn" onclick="connectMobileCamera()">
+                        <div class="button-inner" style="font-size: clamp(1rem, 3vh, 2rem); padding: 10px 40px;">
+                            <span class="button-text">Connect Camera</span>
+                        </div>
+                    </button>
+                </div>
+                
+                <!-- Right curl of the scroll -->
+                <div class="scroll-curl right-curl"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 4C: MOBILE IP CAMERA VIEWER -->
+    <div id="page-4c" class="page" style="display: none;">
+        <div class="wood-table">
+            <div class="open-book">
+                <button class="back-btn" onclick="disconnectMobileCamera()">
+                    <i class="fa-solid fa-arrow-left-long"></i> Back
+                </button>
+                <button class="home-btn" onclick="disconnectMobileCamera(); navigate('1')">
+                    <i class="fa-solid fa-house"></i> Home
+                </button>
+                <div class="book-spine"></div>
+                
+                <div class="camera-viewport-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; z-index: 5;">
+                    <h2 class="section-title" style="margin-bottom: 20px;">Live Mobile Feed</h2>
+                    <div class="ornate-brass-frame">
+                        <img id="mobile-video-preview" alt="Connecting..." style="width: 100%; height: 100%; object-fit: cover; display: block; background: #000;">
+                    </div>
+                </div>
+                
+                <!-- Action Buttons (hanging off bottom) -->
+                <div class="scanner-actions">
+                    <button class="ornate-button extract-btn" onclick="startExtraction('mobile')">
+                        <div class="button-inner" style="font-size: clamp(1rem, 3vh, 2rem); padding: 10px 30px;">
+                            <i class="fa-solid fa-wand-magic-sparkles" style="margin-right: 10px;"></i>
+                            <span class="button-text">Extract Text</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 5: LOADING / PROCESSING -->
+    <div id="page-5" class="page" style="display: none;">
+        <div class="wood-table">
+            <div class="closed-book-container">
+                <div class="closed-book">
+                    <div class="book-cover">
+                        <div class="magic-emblem">
+                            <i class="fa-solid fa-feather-pointed magic-icon"></i>
+                            <div class="magic-text">Reading Text...</div>
+                        </div>
+                    </div>
+                    <div class="book-pages-edge"></div>
+                </div>
+                
+                <div class="progress-bar-container">
+                    <div class="gear left-gear"><i class="fa-solid fa-gear"></i></div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="loading-progress"></div>
+                        <div class="progress-nodes">
+                            <div class="node active"></div>
+                            <div class="node"></div>
+                            <div class="node"></div>
+                            <div class="node"></div>
+                            <div class="node"></div>
+                        </div>
+                    </div>
+                    <div class="gear right-gear"><i class="fa-solid fa-gear"></i></div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="ornate-button cancel-btn" onclick="cancelExtraction()" style="background: linear-gradient(135deg, #8b2a2a, #5a1a1a);">
+                        <div class="button-inner" style="padding: 10px 30px;">
+                            <i class="fa-solid fa-xmark" style="margin-right: 10px;"></i>
+                            <span class="button-text">Cancel Processing</span>
+                        </div>
+                    </button>
+                </div>
+                
+                <div class="loading-status" id="loading-status-text">
+                    Initializing...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 6: RESULTS -->
+    <div id="page-6" class="page" style="display: none;">
+        <div class="wood-table">
+            <button class="back-btn" onclick="resetApp()" style="top: clamp(15px, 3vh, 30px); left: clamp(15px, 3vh, 30px); z-index: 20;">
+                <i class="fa-solid fa-arrow-left-long"></i> Back
+            </button>
+            <button class="home-btn" onclick="navigate('1')" style="top: clamp(15px, 3vh, 30px); right: clamp(15px, 3vh, 30px); color: #e6d3af; z-index: 20;">
+                <i class="fa-solid fa-house"></i> Home
+            </button>
+            <div class="open-book results-book">
+                <div class="book-spine"></div>
+                <!-- Wrapper to force horizontal two-page layout -->
+                <div class="results-pages-wrapper">
+                    <!-- Left Page: Raw OCR -->
+                    <div class="book-page result-book-page">
+                        <h2 class="section-title">Original OCR Output</h2>
+                        <p class="section-desc">(Text from PaddleOCR)</p>
+                        <div class="result-text-container">
+                            <p id="raw-ocr-text" class="result-text">Waiting for text...</p>
+                        </div>
+                        <p class="disclaimer"><i class="fa-solid fa-triangle-exclamation"></i> <strong>Caution:</strong> This text is directly extracted from the uploaded image. Some recognition errors may occur depending on image quality.</p>
+                    </div>
+                    <!-- Right Page: LLM Corrected -->
+                    <div class="book-page result-book-page">
+                        <h2 class="section-title">AI Corrected Output</h2>
+                        <p class="section-desc">(Text corrected by Ollama)</p>
+                        <div class="result-text-container">
+                            <p id="corrected-ocr-text" class="result-text">Waiting for text...</p>
+                        </div>
+                        <p class="disclaimer"><i class="fa-solid fa-triangle-exclamation"></i> <strong>Caution:</strong> This version has been corrected using an AI Language Model. Although highly accurate, AI may occasionally introduce mistakes. Please verify important information with the original text.</p>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons (hanging off bottom with proper clearance) -->
+                <div class="result-actions">
+                    <button class="result-action-btn btn-download-txt" onclick="downloadResult('txt')">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <span>Download TXT</span>
+                    </button>
+                    <button class="result-action-btn btn-download-json" onclick="downloadResult('json')">
+                        <i class="fa-solid fa-file-code"></i>
+                        <span>Download JSON</span>
+                    </button>
+                    <button class="result-action-btn btn-copy" onclick="copyResult()">
+                        <i class="fa-solid fa-copy"></i>
+                        <span>Copy Text</span>
+                    </button>
+                    <button class="result-action-btn btn-new-doc" onclick="resetApp()">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>New Document</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link the frontend logic script -->
+    <script src="app.js"></script>
+</body>
+</html>

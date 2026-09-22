@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile IP Camera Test - Old To Digital</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #1e1e1e; color: #fff; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .video-container { margin: 20px 0; border: 2px solid #555; background: #000; min-height: 400px; }
+        img#video-feed { width: 100%; max-width: 640px; display: none; }
+        button { padding: 10px 20px; font-size: 16px; margin: 5px; cursor: pointer; background: #4caf50; color: white; border: none; border-radius: 5px; }
+        button:disabled { background: #555; cursor: not-allowed; }
+        .results { margin-top: 20px; text-align: left; background: #2d2d2d; padding: 20px; border-radius: 5px; white-space: pre-wrap; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Mobile IP Camera Processing Test</h2>
+        
+        <div style="margin: 20px 0; padding-top: 10px;">
+            <p style="color: #bbb;">Connect to your phone's IP Webcam app to extract text.</p>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <input type="text" id="ip-input" placeholder="e.g. 192.168.1.5:8080" style="padding: 10px; border-radius: 5px; flex: 1; border: 1px solid #444; background: #2a2a2a; color: #fff;">
+                <button id="btn-connect-ip" onclick="connectIpCamera()">Connect Phone</button>
+                <button id="btn-process-ip" onclick="processIpCamera()" disabled style="background: #2196f3;">Extract Text</button>
+            </div>
+            <p id="ip-status" style="color: #4caf50; font-size: 14px; margin: 0;"></p>
+        </div>
+
+        <div class="video-container">
+            <img id="video-feed" alt="Phone Camera Feed">
+        </div>
+
+        <div id="results-box" class="results">
+            <h3>Extraction Results:</h3>
+            <div id="loading" style="display:none; color: #ffeb3b;">Processing with PaddleOCR + CRNN + LLM... Please wait...</div>
+            <pre id="output-text"></pre>
+        </div>
+    </div>
+
+    <script>
+        const baseUrl = "http://127.0.0.1:5000";
+        
+        async function connectIpCamera() {
+            const ip = document.getElementById("ip-input").value;
+            if(!ip) {
+                alert("Please enter your phone's IP address and port.");
+                return;
+            }
+            try {
+                document.getElementById("ip-status").innerText = "Connecting...";
+                const res = await fetch(baseUrl + "/ipcamera/connect_phone", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ ip: ip })
+                });
+                const data = await res.json();
+                if(data.success !== false) {
+                    document.getElementById("ip-status").innerText = "Connected to: " + ip;
+                    document.getElementById("btn-process-ip").disabled = false;
+                    
+                    const img = document.getElementById("video-feed");
+                    img.src = baseUrl + "/ipcamera/video_feed?" + new Date().getTime(); // cache bust
+                    img.style.display = "inline-block";
+                } else {
+                    document.getElementById("ip-status").innerText = "Failed: " + data.message;
+                    document.getElementById("ip-status").style.color = "#f44336";
+                }
+            } catch(e) {
+                document.getElementById("ip-status").innerText = "Error: " + e.message;
+            }
+        }
+        
+        async function processIpCamera() {
+            document.getElementById("results-box").style.display = "block";
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("output-text").textContent = "";
+            document.getElementById("btn-process-ip").disabled = true;
+
+            try {
+                const res = await fetch(baseUrl + "/ipcamera/process", { method: "POST" });
+                const data = await res.json();
+                
+                let output = "";
+                if(data.success !== false) {
+                    output += "--- RAW EXTRACTED TEXT ---\n" + (data.raw_text || "None") + "\n\n";
+                    output += "--- LLM REFINED TEXT ---\n" + (data.corrected_text || "None");
+                } else {
+                    output = "Error: " + (data.message || "Unknown error");
+                }
+                
+                document.getElementById("output-text").textContent = output;
+            } catch (e) {
+                document.getElementById("output-text").textContent = "Request failed. Check backend console.";
+            } finally {
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("btn-process-ip").disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

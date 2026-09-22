@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Test - Old To Digital</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #1e1e1e; color: #fff; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .video-container { margin: 20px 0; border: 2px solid #555; background: #000; min-height: 400px; }
+        img#video-feed { width: 100%; max-width: 640px; display: none; }
+        button { padding: 10px 20px; font-size: 16px; margin: 5px; cursor: pointer; background: #4caf50; color: white; border: none; border-radius: 5px; }
+        button:disabled { background: #555; cursor: not-allowed; }
+        .results { margin-top: 20px; text-align: left; background: #2d2d2d; padding: 20px; border-radius: 5px; white-space: pre-wrap; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Camera Processing Test</h2>
+        
+        <div class="controls">
+            <button id="btn-start" onclick="startCamera()">Turn On Webcam</button>
+            <button id="btn-stop" onclick="stopCamera()" disabled>Turn Off Webcam</button>
+            <button id="btn-process" onclick="processFrame()" disabled style="background: #2196f3;">Extract Text from Webcam</button>
+        </div>
+        
+
+
+        <div class="video-container">
+            <img id="video-feed" alt="Camera Feed">
+        </div>
+
+        <div id="results-box" class="results">
+            <h3>Extraction Results:</h3>
+            <div id="loading" style="display:none; color: #ffeb3b;">Processing with PaddleOCR + CRNN + LLM... Please wait...</div>
+            <pre id="output-text"></pre>
+        </div>
+    </div>
+
+    <script>
+        const baseUrl = "http://127.0.0.1:5000";
+        
+        async function startCamera() {
+            try {
+                await fetch(baseUrl + "/start", { method: "POST" });
+                const img = document.getElementById("video-feed");
+                img.src = baseUrl + "/video_feed?" + new Date().getTime(); // cache bust
+                img.style.display = "inline-block";
+                
+                document.getElementById("btn-start").disabled = true;
+                document.getElementById("btn-stop").disabled = false;
+                document.getElementById("btn-process").disabled = false;
+            } catch (e) {
+                alert("Failed to start camera. Is the backend running?");
+            }
+        }
+
+        async function stopCamera() {
+            await fetch(baseUrl + "/stop", { method: "POST" });
+            const img = document.getElementById("video-feed");
+            img.src = "";
+            img.style.display = "none";
+            
+            document.getElementById("btn-start").disabled = false;
+            document.getElementById("btn-stop").disabled = true;
+            document.getElementById("btn-process").disabled = true;
+        }
+
+        async function processFrame() {
+            document.getElementById("results-box").style.display = "block";
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("output-text").textContent = "";
+            document.getElementById("btn-process").disabled = true;
+
+            try {
+                const response = await fetch(baseUrl + "/process", { method: "POST" });
+                const data = await response.json();
+                
+                let output = "";
+                if(data.success !== false) {
+                    output += "--- RAW EXTRACTED TEXT ---\n" + (data.raw_text || "None") + "\n\n";
+                    output += "--- LLM REFINED TEXT ---\n" + (data.corrected_text || "None");
+                } else {
+                    output = "Error: " + (data.message || "Unknown error");
+                }
+                
+                document.getElementById("output-text").textContent = output;
+            } catch (e) {
+                document.getElementById("output-text").textContent = "Request failed. Check backend console.";
+            } finally {
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("btn-process").disabled = false;
+            }
+        }
+
+    </script>
+</body>
+</html>

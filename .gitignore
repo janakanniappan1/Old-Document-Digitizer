@@ -1,0 +1,73 @@
+# =============================================================
+#  Old Document Digitizer — .gitignore
+# =============================================================
+
+# ── Python cache ──────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+
+# ── Virtual environments ──────────────────────────────────────
+venv/
+.venv/
+env/
+ENV/
+
+# ── Environment / secrets ─────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Generated OCR outputs (runtime data, NOT source code) ─────
+backend/outputs/*
+!backend/outputs/.gitkeep
+
+# ── Temporary uploads ─────────────────────────────────────────
+backend/temp/*
+!backend/temp/.gitkeep
+
+# ── CRNN feedback / dataset (auto-generated at runtime) ───────
+backend/model/feedback_data/crops/*
+backend/model/feedback_data/labels.csv
+!backend/model/feedback_data/.gitkeep
+
+# ── PaddleOCR model cache (downloaded automatically) ──────────
+.paddleocr/
+paddleocr/
+
+# ── Logs ──────────────────────────────────────────────────────
+*.log
+output.log
+
+# ── IDE / Editor ──────────────────────────────────────────────
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ── OS junk ───────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# ── Test/scratch images ───────────────────────────────────────
+backend/test.jpg
+
+# ── Debug-only files (do not ship) ───────────────────────────
+backend/test_crnn.py
+backend/test_llm_speed.py
+backend/test_paddle.py
+backend/test_paddle_debug.py
+backend/test_upload.py
+backend/services/test_llm.py
+
+# ── NOTE: Keep these critical model files ─────────────────────
+#  backend/model/crnn_ctc.keras   (~12 MB — within GitHub limit)
+#  backend/model/vocab.json
+#  backend/model/train_crnn_ctc.py
+#  backend/model/retrain_crnn.py
+#  backend/model/training_metrics.png
