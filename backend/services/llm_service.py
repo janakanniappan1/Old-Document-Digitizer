@@ -26,7 +26,7 @@ class LLMService:
             logger.info("Using Groq Cloud AI (%s) for text correction", self.model)
         elif self.gemini_api_key:
             self.provider = "Gemini"
-            self.model = os.environ.get("GEMINI_MODEL", "gemini-1.5-flash")
+            self.model = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
             logger.info("Using Google Gemini Cloud AI (%s) for text correction", self.model)
         else:
             self.provider = "Ollama"
