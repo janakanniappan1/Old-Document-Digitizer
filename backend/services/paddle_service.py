@@ -15,14 +15,14 @@ class PaddleOCRService:
 
         self.ocr = PaddleOCR(
             lang="en",
-            use_angle_cls=True,
-            use_textline_orientation=True,
+            use_angle_cls=False,
+            use_textline_orientation=False,
             use_space_char=True,
             show_log=False,
             det_db_thresh=0.10,
             det_db_box_thresh=0.30,
             det_db_unclip_ratio=2.0,
-            det_limit_side_len=1280
+            det_limit_side_len=960
         )
 
         print("PaddleOCR Loaded Successfully")
@@ -39,13 +39,14 @@ class PaddleOCRService:
         downscale_ratio = 1.0
 
         target_img = image
-        if max_dim > 1600:
-            downscale_ratio = 1600.0 / max_dim
+        # Downscale to 960px max dimension: prevents OOM crashes on free cloud tiers and speeds inference up 4x
+        if max_dim > 960:
+            downscale_ratio = 960.0 / max_dim
             new_w = int(w * downscale_ratio)
             new_h = int(h * downscale_ratio)
             target_img = cv2.resize(image, (new_w, new_h), interpolation=cv2.INTER_AREA)
 
-        result = self.ocr.ocr(target_img, cls=True)
+        result = self.ocr.ocr(target_img, cls=False)
 
         lines = []
 
@@ -85,6 +86,9 @@ class PaddleOCRService:
 
                     except Exception:
                         pass
+
+        import gc
+        gc.collect()
 
         return lines
 
@@ -219,15 +223,11 @@ class PaddleOCRService:
         # Fast primary pass
         lines = self.ocr_image(image)
 
-        # Adaptive fallback: only if no text lines were detected at normal scale, run resized pass
-        if len(lines) == 0 and hasattr(self.image_service, 'preprocess'):
+        # Adaptive fallback: only if no text lines were detected at normal scale, run contrast enhancement pass
+        if len(lines) == 0 and hasattr(self.image_service, 'clahe'):
             try:
-                processed = self.image_service.preprocess(image)
+                processed = self.image_service.clahe(image)
                 proc_lines = self.ocr_image(processed)
-                scale = getattr(self.image_service, 'scale', 2.0)
-                if scale and scale != 1.0:
-                    for item in proc_lines:
-                        item["bbox"] = [[p[0] / scale, p[1] / scale] for p in item["bbox"]]
                 lines.extend(proc_lines)
             except Exception as e:
                 print("Warning: Adaptive OCR fallback error:", e)

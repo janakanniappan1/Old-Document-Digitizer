@@ -5,7 +5,7 @@ import numpy as np
 class ImageService:
 
     def __init__(self):
-        self.scale = 2.0
+        self.scale = 1.0
 
     # ==========================================
     # Resize Image

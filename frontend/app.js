@@ -128,6 +128,49 @@ function handleImageUpload(event) {
 
 let extractionController = null;
 
+function prepareUploadFile(file, maxDimension = 1280, quality = 0.85) {
+    return new Promise((resolve) => {
+        if (!file || !file.type || !file.type.startsWith('image/') || file.type === 'image/gif' || file.type === 'image/svg+xml') {
+            return resolve(file);
+        }
+        const img = new Image();
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            img.onload = () => {
+                const w = img.width;
+                const h = img.height;
+                if (w <= maxDimension && h <= maxDimension && file.size < 1024 * 1024) {
+                    return resolve(file);
+                }
+                const ratio = Math.min(maxDimension / w, maxDimension / h, 1.0);
+                const targetW = Math.round(w * ratio);
+                const targetH = Math.round(h * ratio);
+
+                const canvas = document.createElement('canvas');
+                canvas.width = targetW;
+                canvas.height = targetH;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, targetW, targetH);
+                canvas.toBlob((blob) => {
+                    if (blob && blob.size < file.size) {
+                        const optimizedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                            type: 'image/jpeg',
+                            lastModified: Date.now()
+                        });
+                        resolve(optimizedFile);
+                    } else {
+                        resolve(file);
+                    }
+                }, 'image/jpeg', quality);
+            };
+            img.onerror = () => resolve(file);
+            img.src = e.target.result;
+        };
+        reader.onerror = () => resolve(file);
+        reader.readAsDataURL(file);
+    });
+}
+
 function startExtraction(method) {
     selectedMethod = method;
     navigate('5');
@@ -144,30 +187,36 @@ function startExtraction(method) {
             navigate('3a');
             return;
         }
-        
-        const formData = new FormData();
-        formData.append('file', fileInput.files[0]);
-        formData.append('mode', currentProcessingMode);
-        
-        fetch(`${BACKEND_URL}/upload`, {
-            method: 'POST',
-            body: formData,
-            signal: signal
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().catch(() => ({})).then(errData => {
-                    throw new Error(errData.error || `Server responded with ${response.status}`);
-                });
-            }
-            return response.json();
-        })
-        .then(data => displayResults(data))
-        .catch(err => {
-            if (err.name === 'AbortError') return;
-            console.error('Extraction error:', err);
-            alert("Extraction failed: " + (err.message || "Could not reach backend"));
-            navigate('3a'); 
+
+        prepareUploadFile(fileInput.files[0]).then(fileToSend => {
+            const formData = new FormData();
+            formData.append('file', fileToSend);
+            formData.append('mode', currentProcessingMode);
+            
+            fetch(`${BACKEND_URL}/upload`, {
+                method: 'POST',
+                body: formData,
+                signal: signal
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().catch(() => ({})).then(errData => {
+                        throw new Error(errData.error || `Server responded with ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => displayResults(data))
+            .catch(err => {
+                clearInterval(loadingInterval);
+                if (err.name === 'AbortError') return;
+                console.error('Extraction error:', err);
+                const msg = err.message === 'Failed to fetch'
+                    ? 'Could not connect to AI backend. If the backend is waking up, please retry in a few moments.'
+                    : err.message;
+                alert("Extraction failed: " + (msg || "Could not reach backend"));
+                navigate('3a'); 
+            });
         });
         
     } else if (method === 'laptop') {
@@ -192,9 +241,13 @@ function startExtraction(method) {
             })
             .then(data => displayResults(data))
             .catch(err => {
+                clearInterval(loadingInterval);
                 if (err.name === 'AbortError') return;
                 console.error('Extraction error:', err);
-                alert("Extraction failed: " + (err.message || "Could not reach backend"));
+                const msg = err.message === 'Failed to fetch'
+                    ? 'Could not connect to AI backend. Please retry in a few moments.'
+                    : err.message;
+                alert("Extraction failed: " + (msg || "Could not reach backend"));
                 navigate('4a'); 
             });
         }, 'image/jpeg');
@@ -214,9 +267,13 @@ function startExtraction(method) {
         })
         .then(data => displayResults(data))
         .catch(err => {
+            clearInterval(loadingInterval);
             if (err.name === 'AbortError') return;
             console.error('Extraction error:', err);
-            alert("Extraction failed: " + (err.message || "Could not reach backend"));
+            const msg = err.message === 'Failed to fetch'
+                ? 'Could not connect to AI backend. Please retry in a few moments.'
+                : err.message;
+            alert("Extraction failed: " + (msg || "Could not reach backend"));
             navigate('4c'); 
         });
     }
