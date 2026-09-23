@@ -490,7 +490,20 @@ function connectMobileCamera() {
             document.getElementById('mobile-video-preview').src = `${BACKEND_URL}/ipcamera/video_feed?` + new Date().getTime();
             navigate('4c');
         } else {
-            alert("Failed to connect: " + data.message);
+            const isPrivateIp = /^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(rawIp.replace(/^https?:\/\//, ''));
+            const isCloud = !BACKEND_URL.includes('localhost') && !BACKEND_URL.includes('127.0.0.1');
+            if (isPrivateIp && isCloud) {
+                alert(
+                    "Network Architecture Notice:\n\n" +
+                    "Your backend is running in the Cloud on Render (public internet).\n" +
+                    "A cloud server cannot connect to your phone's private home Wi-Fi IP (" + rawIp + ").\n\n" +
+                    "Two Easy Solutions:\n" +
+                    "1. Open this website directly on your Mobile Phone browser (https://old-document-digitizer.vercel.app) -> Choose 'Upload' -> Tap upload area -> Select 'Camera'. This uses your phone camera in HD directly!\n" +
+                    "2. To use IP Webcam app streaming, run the backend locally on your laptop ('python backend/app.py') and set API Server to http://127.0.0.1:5000."
+                );
+            } else {
+                alert("Failed to connect: " + data.message);
+            }
         }
     })
     .catch(err => {
