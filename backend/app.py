@@ -69,6 +69,7 @@ def home():
     return jsonify({
         "project": "Old Document Digitizer",
         "backend": "Running",
+        "version": "v2.2-vision",
         "OCR": "PaddleOCR",
         "LLM": llm_name,
         "status": "Ready"
