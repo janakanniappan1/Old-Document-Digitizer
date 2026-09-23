@@ -102,6 +102,80 @@ Output:"""
         return prompt
 
     # ==========================================
+    # Multimodal Vision Transcription
+    # ==========================================
+    def has_vision(self):
+        return bool(self.gemini_api_key)
+
+    def transcribe_image(self, image):
+        """
+        Uses Cloud Multimodal AI (Google Gemini 1.5 Flash Vision) to transcribe
+        historical documents directly in 2-4s without local CPU bottleneck or memory issues.
+        """
+        if self.gemini_api_key and image is not None:
+            return self._transcribe_with_gemini(image)
+        return ""
+
+    def _transcribe_with_gemini(self, image):
+        import base64
+        import cv2
+
+        try:
+            h, w = image.shape[:2]
+            max_dim = max(h, w)
+            target = image
+            if max_dim > 1280:
+                ratio = 1280.0 / max_dim
+                target = cv2.resize(image, (int(w * ratio), int(h * ratio)), interpolation=cv2.INTER_AREA)
+
+            success, buf = cv2.imencode('.jpg', target, [int(cv2.IMWRITE_JPEG_QUALITY), 85])
+            if not success:
+                return ""
+            b64_img = base64.b64encode(buf).decode('utf-8')
+
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.gemini_api_key}"
+            headers = {"Content-Type": "application/json"}
+            payload = {
+                "contents": [
+                    {
+                        "parts": [
+                            {
+                                "text": (
+                                    "You are an expert paleographer and historical document digitizer. "
+                                    "Transcribe all handwritten and printed text from this document image with utmost accuracy. "
+                                    "Fix broken words, restore historical punctuation and preserve layout structure, dates, and names. "
+                                    "Return ONLY the plain transcribed text with no markdown formatting, backticks, or intro/outro."
+                                )
+                            },
+                            {
+                                "inline_data": {
+                                    "mime_type": "image/jpeg",
+                                    "data": b64_img
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "generationConfig": {
+                    "temperature": 0.1,
+                    "maxOutputTokens": 2048
+                }
+            }
+            req = urllib.request.Request(
+                url,
+                data=json.dumps(payload).encode("utf-8"),
+                headers=headers,
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=25) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                result = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+                return self._clean_llm_response(result, "")
+        except Exception as e:
+            logger.warning("Gemini Vision transcription notice: %s", e)
+            return ""
+
+    # ==========================================
     # AI Correction
     # ==========================================
     def correct_text(self, text):
