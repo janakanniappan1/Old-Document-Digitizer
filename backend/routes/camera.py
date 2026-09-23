@@ -133,7 +133,7 @@ def capture():
             return jsonify({
                 "success": False,
                 "message": "No frame captured."
-            })
+            }), 503
         current_frame = frame.copy()
 
     success, buffer = cv2.imencode(".jpg", current_frame)
@@ -141,7 +141,7 @@ def capture():
         return jsonify({
             "success": False,
             "message": "Failed to encode frame."
-        })
+        }), 500
 
     return Response(
         buffer.tobytes(),
@@ -173,7 +173,7 @@ def process():
             return jsonify({
                 "success": False,
                 "message": "No frame available to process."
-            })
+            }), 503
         current_frame = frame.copy()
 
     try:

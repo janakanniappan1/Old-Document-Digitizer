@@ -89,7 +89,7 @@ def connect_phone():
         return jsonify({
             "success": False,
             "message": f"Unable to connect to stream at {PHONE_URL}"
-        })
+        }), 502
 
     is_phone_running = True
     threading.Thread(
@@ -189,7 +189,7 @@ def process():
             return jsonify({
                 "success": False,
                 "message": "Phone camera is not connected or no frame available."
-            })
+            }), 503
         current_frame = ip_frame.copy()
 
     try:

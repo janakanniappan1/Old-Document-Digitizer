@@ -11,3 +11,5 @@ services:
         value: production
       - key: GROQ_API_KEY
         sync: false
+      - key: ALLOWED_ORIGINS
+        value: https://old-document-digitizer.vercel.app

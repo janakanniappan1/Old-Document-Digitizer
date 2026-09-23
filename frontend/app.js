@@ -183,6 +183,7 @@ function startExtraction(method) {
     if (method === 'upload') {
         const fileInput = document.getElementById('file-upload');
         if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+            clearInterval(loadingInterval);
             alert("No file selected.");
             navigate('3a');
             return;
@@ -351,7 +352,7 @@ function displayResults(data) {
     document.getElementById('loading-status-text').innerText = "Complete!";
     
     if (data.success === false) {
-        alert("Error: " + data.message);
+        alert("Error: " + (data.error || data.message || "Unknown error"));
         navigate('1'); // back to home
         return;
     }
@@ -552,9 +553,42 @@ async function checkBackendHealth(isRetry = false) {
 
 // Initial health check
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => checkBackendHealth(false));
+    document.addEventListener('DOMContentLoaded', () => {
+        checkBackendHealth(false);
+        initDragAndDrop();
+    });
 } else {
     checkBackendHealth(false);
+    initDragAndDrop();
 }
 
+// --- Drag & Drop Support for Upload Dropzone ---
+function initDragAndDrop() {
+    const dropzone = document.querySelector('.upload-dropzone');
+    if (!dropzone) return;
 
+    ['dragenter', 'dragover'].forEach(evt => {
+        dropzone.addEventListener(evt, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.add('drag-over');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(evt => {
+        dropzone.addEventListener(evt, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.remove('drag-over');
+        });
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const fileInput = document.getElementById('file-upload');
+            fileInput.files = files;
+            handleImageUpload({ target: fileInput });
+        }
+    });
+}

@@ -18,16 +18,19 @@ app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, "temp")
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024
 
 # ── CORS ───────────────────────────────────────────────────────────────────────
-# For local development: allow all origins.
-# For production: set ALLOWED_ORIGINS env var to your domain(s).
-#   e.g.  ALLOWED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
+# Set ALLOWED_ORIGINS env var in production to your frontend domain(s).
+#   e.g.  ALLOWED_ORIGINS=https://old-document-digitizer.vercel.app
+# If unset, defaults to "*" (allow all) for development convenience.
 _raw_origins = os.environ.get("ALLOWED_ORIGINS", "")
 if _raw_origins:
     _allowed = [o.strip() for o in _raw_origins.split(",") if o.strip()]
-    CORS(app, origins=_allowed)
 else:
-    # Development fallback — allow everything locally
-    CORS(app)
+    _allowed = "*"
+
+CORS(app, origins=_allowed, methods=["GET", "POST", "OPTIONS"],
+     allow_headers=["Content-Type", "Authorization"],
+     expose_headers=["Content-Type"],
+     supports_credentials=False)
 
 # ── Blueprints ────────────────────────────────────────────────────────────────
 app.register_blueprint(upload_bp)
