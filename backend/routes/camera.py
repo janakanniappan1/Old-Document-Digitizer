@@ -19,6 +19,7 @@ camera = None
 frame = None
 lock = threading.Lock()
 is_camera_running = False
+last_camera_access = time.time()
 
 CAMERA_INDEX = 0
 
@@ -35,12 +36,17 @@ def camera_reader():
             time.sleep(0.05)
             continue
 
+        if time.time() - last_camera_access > 60:
+            logger.info("Camera auto-stopped due to 60s inactivity.")
+            stop_camera()
+            break
+
         success, img = camera.read()
 
         if success:
             with lock:
-                frame = img.copy()
-            time.sleep(0.01)
+                frame = img
+            time.sleep(0.04)
         else:
             time.sleep(0.05)
 
@@ -50,9 +56,10 @@ def camera_reader():
 # ===========================
 
 def start_camera(index=0):
-    global camera, is_camera_running
+    global camera, is_camera_running, last_camera_access
 
     stop_camera()
+    last_camera_access = time.time()
 
     camera = cv2.VideoCapture(index)
     if not camera.isOpened():
@@ -90,9 +97,13 @@ def stop_camera():
 
 @camera_bp.route("/video_feed")
 def video_feed():
+    global last_camera_access
+    last_camera_access = time.time()
 
     def generate():
-        while True:
+        global last_camera_access
+        while is_camera_running:
+            last_camera_access = time.time()
             current_frame = None
             with lock:
                 if frame is not None:
@@ -113,7 +124,7 @@ def video_feed():
                 + buffer.tobytes()
                 + b'\r\n'
             )
-            time.sleep(0.03)
+            time.sleep(0.04)
 
     return Response(
         generate(),
@@ -127,6 +138,8 @@ def video_feed():
 
 @camera_bp.route("/capture")
 def capture():
+    global last_camera_access
+    last_camera_access = time.time()
 
     with lock:
         if frame is None:
@@ -167,6 +180,8 @@ def camera_status():
 
 @camera_bp.route("/process", methods=["POST"])
 def process():
+    global last_camera_access
+    last_camera_access = time.time()
 
     with lock:
         if frame is None:

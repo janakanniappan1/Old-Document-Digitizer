@@ -21,7 +21,11 @@ def init_feedback_storage():
 def harvest_lines(image, lines, label_text=""):
     """
     Harvests cropped text line images and logs them with their labels into feedback_data.
+    Skipped in production cloud hosting to conserve memory and disk inodes.
     """
+    if os.environ.get("FLASK_ENV") == "production" or os.environ.get("ENABLE_DATASET_HARVEST", "false").lower() != "true":
+        return 0
+
     if image is None or not lines:
         return 0
 

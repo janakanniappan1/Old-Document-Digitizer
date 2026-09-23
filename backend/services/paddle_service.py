@@ -22,10 +22,12 @@ class PaddleOCRService:
             det_db_thresh=0.10,
             det_db_box_thresh=0.30,
             det_db_unclip_ratio=2.0,
-            det_limit_side_len=960
+            det_limit_side_len=736,
+            enable_mkldnn=False,
+            cpu_threads=1
         )
 
-        print("PaddleOCR Loaded Successfully")
+        print("PaddleOCR Loaded Successfully (Low-Memory Mode)")
 
     # =====================================
     # OCR ON SINGLE IMAGE
@@ -39,9 +41,9 @@ class PaddleOCRService:
         downscale_ratio = 1.0
 
         target_img = image
-        # Downscale to 960px max dimension: prevents OOM crashes on free cloud tiers and speeds inference up 4x
-        if max_dim > 960:
-            downscale_ratio = 960.0 / max_dim
+        # Downscale to 800px max dimension: prevents OOM crashes on free cloud tiers and speeds inference up 4x
+        if max_dim > 800:
+            downscale_ratio = 800.0 / max_dim
             new_w = int(w * downscale_ratio)
             new_h = int(h * downscale_ratio)
             target_img = cv2.resize(image, (new_w, new_h), interpolation=cv2.INTER_AREA)

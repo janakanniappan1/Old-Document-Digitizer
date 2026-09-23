@@ -1,4 +1,16 @@
 import os
+import gc
+
+# ── Cloud Free Tier Low-Memory & Single-Thread Enforcement ────────────────────
+# Must be set before cv2, paddle, or numpy initialize C++/MKL/OpenMP threads
+os.environ.setdefault("FLAGS_allocator_strategy", "naive_best_fit")
+os.environ.setdefault("FLAGS_fraction_of_cpu_memory_to_use", "0.05")
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("MKL_NUM_THREADS", "1")
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+os.environ.setdefault("VECLIB_MAXIMUM_THREADS", "1")
+os.environ.setdefault("NUMEXPR_NUM_THREADS", "1")
+
 from flask import Flask, jsonify
 from flask_cors import CORS
 
@@ -60,6 +72,12 @@ def internal_error(e):
     return jsonify({"success": False, "error": "Internal server error."}), 500
 
 
+@app.teardown_request
+def cleanup_memory(exception=None):
+    # Free temporary memory chunks from request processing
+    gc.collect()
+
+
 # ── Health check ──────────────────────────────────────────────────────────────
 @app.route("/")
 def home():
@@ -72,8 +90,8 @@ def home():
     return jsonify({
         "project": "Old Document Digitizer",
         "backend": "Running",
-        "version": "v2.2-vision",
-        "OCR": "PaddleOCR",
+        "version": "v2.3-lowmem",
+        "OCR": "PaddleOCR (Low-Memory Mode)",
         "LLM": llm_name,
         "status": "Ready"
     })

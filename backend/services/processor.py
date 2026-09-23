@@ -88,4 +88,9 @@ def process_image(image, use_llm=True):
     # Update in-memory latest result
     update_result(resp)
 
+    # Free OpenCV and numpy intermediate image matrices from RAM immediately
+    del output_img
+    import gc
+    gc.collect()
+
     return resp

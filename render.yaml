@@ -3,7 +3,7 @@ services:
     name: old-document-digitizer-api
     runtime: python
     buildCommand: pip install -r backend/requirements.txt
-    startCommand: gunicorn -w 1 -b 0.0.0.0:$PORT --timeout 300 --chdir backend app:app
+    startCommand: gunicorn -w 1 --threads 2 --max-requests 50 --max-requests-jitter 10 -b 0.0.0.0:$PORT --timeout 300 --chdir backend app:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.14
@@ -11,5 +11,17 @@ services:
         value: production
       - key: GROQ_API_KEY
         sync: false
+      - key: GEMINI_API_KEY
+        sync: false
       - key: ALLOWED_ORIGINS
         value: https://old-document-digitizer.vercel.app
+      - key: FLAGS_allocator_strategy
+        value: naive_best_fit
+      - key: FLAGS_fraction_of_cpu_memory_to_use
+        value: "0.05"
+      - key: OMP_NUM_THREADS
+        value: "1"
+      - key: MKL_NUM_THREADS
+        value: "1"
+      - key: OPENBLAS_NUM_THREADS
+        value: "1"

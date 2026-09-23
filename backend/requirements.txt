@@ -34,9 +34,8 @@ opencv-python-headless>=4.8,<5.0
 numpy>=1.24,<2.0
 
 # ── Machine learning (CRNN model) ────────────────────────────
-# TensorFlow 2.x — CPU-only build is fine for CRNN inference.
-# On Apple Silicon: use tensorflow-macos instead.
-tensorflow>=2.13,<3.0
+# Note: Offline training scripts use tensorflow, but web inference does not require it.
+
 
 # ── LLM / Ollama client ───────────────────────────────────────
 ollama==0.6.2

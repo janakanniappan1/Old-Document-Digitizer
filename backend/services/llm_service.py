@@ -105,16 +105,91 @@ Output:"""
     # Multimodal Vision Transcription
     # ==========================================
     def has_vision(self):
-        return bool(self.gemini_api_key)
+        return bool(self.groq_api_key or self.gemini_api_key)
 
     def transcribe_image(self, image):
         """
-        Uses Cloud Multimodal AI (Google Gemini 1.5 Flash Vision) to transcribe
-        historical documents directly in 2-4s without local CPU bottleneck or memory issues.
+        Uses Cloud Multimodal AI (Groq Vision or Google Gemini Vision) to transcribe
+        historical documents directly in 1-3s with 0MB local memory usage.
         """
-        if self.gemini_api_key and image is not None:
+        if image is None:
+            return ""
+
+        # Prioritize Groq Vision if configured, then Gemini Vision
+        if self.groq_api_key:
+            transcription = self._transcribe_with_groq(image)
+            if transcription:
+                return transcription
+
+        if self.gemini_api_key:
             return self._transcribe_with_gemini(image)
+
         return ""
+
+    def _transcribe_with_groq(self, image):
+        import base64
+        import cv2
+
+        try:
+            h, w = image.shape[:2]
+            max_dim = max(h, w)
+            target = image
+            if max_dim > 1280:
+                ratio = 1280.0 / max_dim
+                target = cv2.resize(image, (int(w * ratio), int(h * ratio)), interpolation=cv2.INTER_AREA)
+
+            success, buf = cv2.imencode('.jpg', target, [int(cv2.IMWRITE_JPEG_QUALITY), 85])
+            if not success:
+                return ""
+            b64_img = base64.b64encode(buf).decode('utf-8')
+
+            url = "https://api.groq.com/openai/v1/chat/completions"
+            headers = {
+                "Authorization": f"Bearer {self.groq_api_key}",
+                "Content-Type": "application/json",
+                "User-Agent": "OldDocumentDigitizer/1.0"
+            }
+            vision_model = os.environ.get("GROQ_VISION_MODEL", "llama-3.2-11b-vision-preview")
+            payload = {
+                "model": vision_model,
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": (
+                                    "You are an expert paleographer and historical document digitizer. "
+                                    "Transcribe all handwritten and printed text from this document image with utmost accuracy. "
+                                    "Preserve original layout structure, line breaks, punctuation, dates, and names. "
+                                    "Return ONLY the plain transcribed text with no markdown code blocks, no backticks, and no introduction or outro."
+                                )
+                            },
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": f"data:image/jpeg;base64,{b64_img}"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "temperature": 0.1,
+                "max_tokens": 2048
+            }
+            req = urllib.request.Request(
+                url,
+                data=json.dumps(payload).encode("utf-8"),
+                headers=headers,
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=25) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                result = data["choices"][0]["message"]["content"].strip()
+                return self._clean_llm_response(result, "")
+        except Exception as e:
+            logger.warning("Groq Vision transcription notice (falling back to PaddleOCR): %s", e)
+            return ""
 
     def _transcribe_with_gemini(self, image):
         import base64

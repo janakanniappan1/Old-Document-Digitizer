@@ -20,23 +20,35 @@ PHONE_URL = ""
 ip_frame = None
 ip_lock = threading.Lock()
 is_phone_running = False
+last_phone_access = time.time()
 
 # ============================================
 # Camera Thread
 # ============================================
 
 def ipcamera_reader():
-    global ip_frame, is_phone_running
+    global ip_frame, is_phone_running, phone_camera
 
     while is_phone_running:
         if phone_camera is None:
             time.sleep(0.05)
             continue
+
+        if time.time() - last_phone_access > 60:
+            logger.info("IP camera auto-stopped due to 60s inactivity.")
+            is_phone_running = False
+            if phone_camera is not None:
+                phone_camera.release()
+                phone_camera = None
+            with ip_lock:
+                ip_frame = None
+            break
+
         success, img = phone_camera.read()
         if success:
             with ip_lock:
-                ip_frame = img.copy()
-            time.sleep(0.01)
+                ip_frame = img
+            time.sleep(0.04)
         else:
             time.sleep(0.05)
 
@@ -148,8 +160,13 @@ def phone_status():
 
 @ipcamera_bp.route("/video_feed")
 def video_feed():
+    global last_phone_access
+    last_phone_access = time.time()
+
     def generate():
-        while True:
+        global last_phone_access
+        while is_phone_running:
+            last_phone_access = time.time()
             current_frame = None
             with ip_lock:
                 if ip_frame is not None:
@@ -170,7 +187,7 @@ def video_feed():
                 + buffer.tobytes()
                 + b'\r\n'
             )
-            time.sleep(0.03)
+            time.sleep(0.04)
 
     return Response(
         generate(),
@@ -183,6 +200,8 @@ def video_feed():
 
 @ipcamera_bp.route("/process", methods=["POST"])
 def process():
+    global last_phone_access
+    last_phone_access = time.time()
     
     with ip_lock:
         if phone_camera is None or not phone_camera.isOpened() or ip_frame is None:

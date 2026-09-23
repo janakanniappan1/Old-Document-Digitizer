@@ -54,9 +54,9 @@ def history():
         logger.error("Could not list output folder: %s", e)
         return jsonify(history_data)
 
-    for filename in files:
-        if not filename.endswith(".json"):
-            continue
+    json_files = [f for f in files if f.endswith(".json")][:30]
+
+    for filename in json_files:
 
         # Guard: only allow safe filenames
         safe_name = secure_filename(filename)
