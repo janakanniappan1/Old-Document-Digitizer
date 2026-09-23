@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: old-document-digitizer-api
+    name: old-document-digitizer
     runtime: python
     buildCommand: pip install -r backend/requirements.txt
     startCommand: gunicorn -w 1 --threads 2 --max-requests 50 --max-requests-jitter 10 -b 0.0.0.0:$PORT --timeout 300 --chdir backend app:app

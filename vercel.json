@@ -1,3 +1,25 @@
 {
-  "outputDirectory": "frontend"
+  "outputDirectory": "frontend",
+  "rewrites": [
+    {
+      "source": "/upload",
+      "destination": "https://old-document-digitizer.onrender.com/upload"
+    },
+    {
+      "source": "/ipcamera/:path*",
+      "destination": "https://old-document-digitizer.onrender.com/ipcamera/:path*"
+    },
+    {
+      "source": "/latest_result",
+      "destination": "https://old-document-digitizer.onrender.com/latest_result"
+    },
+    {
+      "source": "/history",
+      "destination": "https://old-document-digitizer.onrender.com/history"
+    },
+    {
+      "source": "/download/:path*",
+      "destination": "https://old-document-digitizer.onrender.com/download/:path*"
+    }
+  ]
 }

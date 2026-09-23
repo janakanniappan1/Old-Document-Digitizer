@@ -6,11 +6,20 @@ if (urlParams.get('api')) {
     localStorage.setItem('backend_url', urlParams.get('api').replace(/\/$/, ''));
 }
 
-// If on a live HTTPS site (like Vercel), ignore stale 'http://' localhost URLs to prevent Mixed Content errors
+// Validate storedApi:
+// 1. If on HTTPS, reject insecure 'http://' URLs
+// 2. Reject URLs pointing to the frontend host itself (e.g. vercel.app)
+// 3. Reject invalid or relative URLs
 let storedApi = localStorage.getItem('backend_url');
-if (!isLocal && storedApi && storedApi.startsWith('http://')) {
-    localStorage.removeItem('backend_url');
-    storedApi = null;
+if (storedApi) {
+    const isInvalid = (!isLocal && storedApi.startsWith('http://'))
+        || storedApi.includes('vercel.app')
+        || storedApi === window.location.origin
+        || !storedApi.startsWith('http');
+    if (isInvalid) {
+        localStorage.removeItem('backend_url');
+        storedApi = null;
+    }
 }
 
 let BACKEND_URL = storedApi || defaultApi;
@@ -502,9 +511,13 @@ function disconnectMobileCamera() {
 // --- Dynamic API Server Configuration & Health Check ---
 function promptBackendUrl() {
     const current = localStorage.getItem('backend_url') || BACKEND_URL;
-    const newUrl = prompt("Enter your Backend API URL (e.g. Hugging Face Space URL):\nExample: https://yourusername-old-document-digitizer.hf.space", current);
+    const newUrl = prompt("Enter your Backend API URL:\nExample: https://old-document-digitizer.onrender.com", current);
     if (newUrl !== null && newUrl.trim() !== '') {
         const cleaned = newUrl.trim().replace(/\/$/, '');
+        if (cleaned.includes('vercel.app') || cleaned === window.location.origin) {
+            alert("Error: " + cleaned + " is the frontend website, not the backend API!\nBackend URL should be your Render backend: https://old-document-digitizer.onrender.com");
+            return;
+        }
         localStorage.setItem('backend_url', cleaned);
         BACKEND_URL = cleaned;
         checkBackendHealth();
